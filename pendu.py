@@ -56,4 +56,35 @@ def mot_to_undersocre(mot):
     return mot_cache
 
 
-print(mot_to_undersocre(choix_mot(niveau())))
+def ajout_mot_difficulte(nv_mot):
+    
+    nb_caractere=len(nv_mot)
+    print(nb_caractere)
+
+    if nb_caractere<=7:
+        nv=1
+    elif nb_caractere<=10:
+        nv=2
+    else:
+        nv=3
+    print(nv)
+    with open ("mots.txt","r") as f:
+        lignes=f.readlines()
+
+    indice_insertion=None
+    for i, ligne in enumerate(lignes):
+        if ligne.strip()== "\n" or ligne.strip()=="":
+            nv-=1
+            if nv==0:
+                indice_insertion=i
+                break
+
+    if indice_insertion is None:
+        indice_insertion=len(lignes)
+    
+    lignes.insert(indice_insertion,nv_mot+"\n")
+
+    with open("mots.txt","w") as f:
+        f.writelines(lignes)
+    print(indice_insertion)
+print(ajout_mot_difficulte("salut"))
