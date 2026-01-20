@@ -1,6 +1,6 @@
 from random import *
 
-def niveau ():
+def separation(nv):
     #séparation des niveaux de difficultés
     with open("mots.txt", "r") as f:
         lst_1=[]
@@ -13,27 +13,33 @@ def niveau ():
             indice+=1
             if mot=="\n":
                 lst_indice.append(indice)
-        for i in range(0,lst_indice[0]-1):
-            lst_1.append(lst_mot[i])
-        for j in range(lst_indice[0]+1,lst_indice[1]-1):
-            lst_2.append(lst_mot[j])
-        for h in range (lst_indice[1]+1,len(lst_mot)):
-            lst_3.append(lst_mot[h])
+        if nv==1:
+            for i in range(0,lst_indice[0]-1):
+                lst_1.append(lst_mot[i])
+            return lst_1
+        elif nv==2:
+            for j in range(lst_indice[0]+1,lst_indice[1]-1):
+                lst_2.append(lst_mot[j])
+            return lst_2
+        elif nv==3:
+            for h in range (lst_indice[1]+1,len(lst_mot)):
+                lst_3.append(lst_mot[h])
+            return lst_3
+
+def niveau ():
+    global nv
     #interogation utilisateur
     lst_nv=[1,2,3]
     nv=int(input("Niveau 1, 2 ou 3? "))
     if nv not in lst_nv:
-        return "Choix non conforme", niveau()   
+        return niveau()   
     match nv:
-        case 1:
-           
-            return(lst_1)
+        case 1:           
+            return separation(1)
         case 2:
-           
-            return(lst_2)
+            return separation(2)
         case 3:
-            
-            return lst_3
+            return separation(3)
 
 def choix_mot (liste):
     nb_ligne=randint(0,len(liste)-1)
