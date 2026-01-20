@@ -1,8 +1,12 @@
+#-*- coding: utf-8 -*-
+
 from random import *
+
+import pygame
 
 
 def choix_mot (fichier):
-    with open (fichier,"r") as f:
+    with open (fichier,"r", encoding="utf-8") as f:
         mot=f.readlines()
         nb_ligne=randint(0,len(mot)-1)
         print(mot[nb_ligne])
@@ -22,6 +26,18 @@ def verif_mot(lettre,mot_cache,mot_a_trouver,vie):
     if lettre in mot_a_trouver:
         mot_cache_list = list(mot_cache)
         for i in range(len(mot_a_trouver)):
+            if lettre=="e" and (mot_a_trouver_list[i]=="é" or mot_a_trouver_list[i]=="è" or mot_a_trouver_list[i]=="ê"):
+                mot_cache_list[2*i] = lettre
+            elif lettre=="é" and (mot_a_trouver_list[i]=="e" or mot_a_trouver_list[i]=="è" or mot_a_trouver_list[i]=="ê"):
+                mot_cache_list[2*i] = lettre
+            elif lettre == "è" and (mot_a_trouver_list[i]=="e" or mot_a_trouver_list[i]=="é" or mot_a_trouver_list[i]=="ê"):
+                mot_cache_list[2*i] = lettre
+            elif lettre == "c" and mot_a_trouver_list[i]=="ç":
+                mot_cache_list[2*i] = "ç"
+            elif lettre == "u" and mot_a_trouver_list[i]=="ù":
+                mot_cache_list[2*i] = "ù"
+            elif lettre == "a" and (mot_a_trouver_list[i]=="à" or mot_a_trouver_list[i]=="â"):
+                mot_cache_list[2*i] = mot_a_trouver_list[i]        
             if mot_a_trouver_list[i] == lettre:
                 mot_cache_list[2*i] = lettre
         mot_cache = "".join(mot_cache_list)
@@ -31,10 +47,18 @@ def verif_mot(lettre,mot_cache,mot_a_trouver,vie):
         return mot_cache, vie
     
 def ajout_mot():
-    with open("mots.txt","a") as f:
-        nouveau_mot = input("Entrez le nouveau mot à ajouter : ").strip().lower()
-        f.write(f"{nouveau_mot}\n")
-    return f"Le mot '{nouveau_mot}' a été ajouté au fichier mots.txt."    
+    with open("mots.txt","r", encoding="utf-8") as f:
+        nouveau_mot = input("Entrez le mot que vous souhaitez ajouter : ").strip().lower()
+        #nouveau_mot = pygame.key.start_text_input()
+        liste_mots=f.readlines()
+        for mot in liste_mots:
+            if nouveau_mot == mot.strip().lower():
+                print("Le mot existe déjà dans la liste.")
+                return ajout_mot()
+        if verif_ajout(nouveau_mot) != "Mot valide." :
+            return ajout_mot()
+        else:
+           return nouveau_mot
     
 def verification_victoire(mot_cache,vie):
     if vie == 0:
@@ -60,7 +84,7 @@ def score(vie,nom_joueur):
             points = 1
         case _:
             points = 0    
-    with open("scores.txt","a") as f:
+    with open("scores.txt","a", encoding="utf-8") as f:
         f.write(f"{nom_joueur} : {points} points\n")
     return points
 
@@ -82,6 +106,7 @@ def jeu():
     mot_cache=mot_to_undersocre(mot)
     vie=7
     victoire=None
+    ajout_mot()
     while victoire is None:
         print(mot_cache)
         print(f"Il vous reste {vie} vies.")
@@ -96,6 +121,17 @@ def jeu():
             nom_joueur = input("Entrez votre nom pour enregistrer votre score : ")
             points = score(vie, nom_joueur)
             print(f"Votre score est de {points} points.")
+            afficher_score()
+
+def afficher_score(score_file="scores.txt"):
+    try:
+        with open(score_file, "r", encoding="utf-8") as f:
+            scores = f.readlines()
+            print("\nScores des joueurs :")
+            for ligne in scores:
+                print(ligne.strip())
+    except FileNotFoundError:
+        print("Aucun score enregistré pour le moment.")
 
 if __name__ == "__main__":
     jeu()            
