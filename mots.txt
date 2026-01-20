@@ -14,3 +14,7 @@ Carnaval
 Fenêtre
 Astronaute
 mars
+car
+map
+ok
+s
