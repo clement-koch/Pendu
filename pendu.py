@@ -184,8 +184,7 @@ def score(vie,nb_l):
 
 def sauvegarder_score(highscores, score_file="scores.txt"):
     with open(score_file, "w", encoding="utf-8") as f:
-        for highscore in highscores:
-            f.write(f"{highscore['Nom']},{highscore['Score']}\n")
+        json.dump(highscores, f, ensure_ascii=False, indent=4)
 
 def highscore(score,highscores):
     if len(highscores) < max_scores:
@@ -253,17 +252,18 @@ def charger_scores(score_file="scores.txt"):
             content = f.read().strip()
             if not content:
                 return []
-            return json.load(open(score_file, "r", encoding="utf-8"))
+            f.seek(0)
+            return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return []
 
 def afficher_score(score_file="scores.txt"):
     try:
         with open(score_file, "r", encoding="utf-8") as f:
-            scores = f.readlines()
+            scores = json.load(f)
             print("\nScores des joueurs :")
-            for ligne in scores:
-                print(ligne.strip())
+            for ligne,score in enumerate(scores, start=1):
+                print(f"{ligne}. {score['Nom']} - {score['Score']}")
     except FileNotFoundError:
         print("Aucun score enregistré pour le moment.")
 
