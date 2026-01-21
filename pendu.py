@@ -3,17 +3,62 @@
 from random import *
 import json
 
-import pygame
+
 
 nb_l=0
 max_scores=10
 
-def choix_mot (fichier):
-    with open (fichier,"r", encoding="utf-8") as f:
-        mot=f.readlines()
-        nb_ligne=randint(0,len(mot)-1)
-        print(mot[nb_ligne])
-        return mot[nb_ligne].strip().lower()
+def separation(nv):
+    #séparation des niveaux de difficultés
+    with open("mots.txt", "r",encoding="utf-8") as f:
+        lst_1=[]
+        lst_2=[]
+        lst_3=[]
+        indice=0
+        lst_indice=[]
+        lst_mot=f.readlines()
+        for mot in lst_mot:
+            indice+=1
+            if mot=="\n":
+                lst_indice.append(indice)
+        if nv==1:
+            for i in range(0,lst_indice[0]-1):
+                lst_1.append(lst_mot[i])
+            return lst_1
+        elif nv==2:
+            for j in range(lst_indice[0]+1,lst_indice[1]-1):
+                lst_2.append(lst_mot[j])
+            return lst_2
+        elif nv==3:
+            for h in range (lst_indice[1]+1,len(lst_mot)):
+                lst_3.append(lst_mot[h])
+            return lst_3
+
+
+def niveau ():
+    global nv
+    #interogation utilisateur
+    lst_nv=[1,2,3]
+    nv=int(input("Niveau 1, 2 ou 3? "))
+    if nv not in lst_nv:
+        return niveau()   
+    match nv:
+        case 1:           
+            return separation(1)
+        case 2:
+            return separation(2)
+        case 3:
+            return separation(3)
+        
+
+        
+
+
+def choix_mot (liste):
+    nb_ligne=randint(0,len(liste)-1)
+    mot_a_trouver=liste[nb_ligne].lower().strip()
+    print(mot_a_trouver)
+    return mot_a_trouver
      
 def mot_to_undersocre(mot):
     underscore=[]
@@ -23,6 +68,39 @@ def mot_to_undersocre(mot):
         underscore.append(" ")
     mot_cache="".join(underscore)
     return mot_cache
+
+def ajout_mot_difficulte(nv_mot):
+    
+    nb_caractere=len(nv_mot)
+    print(nb_caractere)
+
+    if nb_caractere<=7:
+        nv=1
+    elif nb_caractere<=10:
+        nv=2
+    else:
+        nv=3
+    print(nv)
+    with open ("mots.txt","r",encoding="utf-8") as f:
+        lignes=f.readlines()
+
+    indice_insertion=None
+    compteur_separateur=0
+    for i, ligne in enumerate(lignes):
+        if ligne.strip()=="":
+            compteur_separateur+=1
+            if  compteur_separateur==nv:
+                indice_insertion=i
+                break
+
+    if indice_insertion is None:
+        indice_insertion=len(lignes)
+    
+    lignes.insert(indice_insertion,nv_mot+"\n")
+
+    with open("mots.txt","w",encoding="utf-8") as f:
+        f.writelines(lignes)
+    print(indice_insertion)
 
 def verif_mot(lettre,mot_cache,mot_a_trouver,vie):
     global nb_l
@@ -53,8 +131,7 @@ def verif_mot(lettre,mot_cache,mot_a_trouver,vie):
     
 def ajout_mot():
     with open("mots.txt","r", encoding="utf-8") as f:
-        liste_mots=f.readlines()
-    
+        liste_mots=f.readlines()   
     nouveau_mot = input("Entrez le mot que vous souhaitez ajouter : ").strip().lower()
     
     for mot in liste_mots:
@@ -65,8 +142,6 @@ def ajout_mot():
     if verif_ajout(nouveau_mot) != "Mot valide.":
         return ajout_mot()
     else:
-        with open("mots.txt","a", encoding="utf-8") as f:
-            f.write(f"{nouveau_mot}\n")
         return nouveau_mot
     
 def verification_victoire(mot_cache,vie):
@@ -76,6 +151,7 @@ def verification_victoire(mot_cache,vie):
         return "victoire"
     
 def score(vie,nb_l):
+    global nv
     points = 0
     if nb_l > 0:
         points += (nb_l * 5)
@@ -95,7 +171,14 @@ def score(vie,nb_l):
         case 1:
             points += 1
         case _:
-            points += 0   
+            points += 0 
+    match nv:
+        case 1:
+            points *=1
+        case 2:
+            points *=1.5
+        case 3:
+            points *=2
     return points
 
 def sauvegarder_score(highscores, score_file="scores.txt"):
@@ -130,11 +213,13 @@ def verif_ajout(mot):
         return "Mot valide."
     
 def jeu():
-    mot=choix_mot("mots.txt")
+    liste = niveau()  # niveau() retourne déjà la liste des mots pour le niveau choisi
+    mot=choix_mot(liste)
     mot_cache=mot_to_undersocre(mot)
     vie=7
     victoire=None
-    ajout_mot()
+    nv_mot=ajout_mot()
+    ajout_mot_difficulte(nv_mot)
     while victoire is None:
         print(mot_cache)
         print(f"Il vous reste {vie} vies.")
@@ -174,5 +259,8 @@ def afficher_score(score_file="scores.txt"):
     except FileNotFoundError:
         print("Aucun score enregistré pour le moment.")
 
+def main():
+    jeu()
+
 if __name__ == "__main__":
-    jeu()            
+    main()    
