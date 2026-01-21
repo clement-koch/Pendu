@@ -6,6 +6,7 @@ import json
 
 
 nb_l=0
+list_lettres=[]
 max_scores=10
 
 def separation(nv):
@@ -200,10 +201,15 @@ def ajouter_score(nom_joueur, points,highscores):
     sauvegarder_score(highscores)
 
 def input_lettre():
+    global list_lettres
     lettre = input("Entrez une lettre : ").lower()
     if len(lettre) != 1 or not lettre.isalpha():
         print("Veuillez entrer une seule lettre valide.")
         return input_lettre()
+    elif lettre in list_lettres:
+        print("Vous avez déjà essayé cette lettre. Choisissez-en une autre.")
+        return input_lettre()
+    list_lettres.append(lettre)
     return lettre
 
 def verif_ajout(mot):
@@ -213,6 +219,8 @@ def verif_ajout(mot):
         return "Mot valide."
     
 def jeu():
+    global list_lettres
+    list_lettres = []
     liste = niveau()  # niveau() retourne déjà la liste des mots pour le niveau choisi
     mot=choix_mot(liste)
     mot_cache=mot_to_undersocre(mot)
