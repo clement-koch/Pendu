@@ -58,7 +58,6 @@ def niveau ():
 def choix_mot (liste):
     nb_ligne=randint(0,len(liste)-1)
     mot_a_trouver=liste[nb_ligne].lower().strip()
-    print(mot_a_trouver)
     return mot_a_trouver
      
 def mot_to_undersocre(mot):
@@ -109,20 +108,18 @@ def verif_mot(lettre,mot_cache,mot_a_trouver,vie):
     if lettre in mot_a_trouver:
         mot_cache_list = list(mot_cache)
         for i in range(len(mot_a_trouver)):
-            if lettre=="e" and (mot_a_trouver_list[i]=="é" or mot_a_trouver_list[i]=="è" or mot_a_trouver_list[i]=="ê"):
-                mot_cache_list[2*i] = lettre
-            elif lettre=="é" and (mot_a_trouver_list[i]=="e" or mot_a_trouver_list[i]=="è" or mot_a_trouver_list[i]=="ê"):
-                mot_cache_list[2*i] = lettre
-            elif lettre == "è" and (mot_a_trouver_list[i]=="e" or mot_a_trouver_list[i]=="é" or mot_a_trouver_list[i]=="ê"):
-                mot_cache_list[2*i] = lettre
-            elif lettre == "c" and mot_a_trouver_list[i]=="ç":
-                mot_cache_list[2*i] = "ç"
-            elif lettre == "u" and mot_a_trouver_list[i]=="ù":
-                mot_cache_list[2*i] = "ù"
-            elif lettre == "a" and (mot_a_trouver_list[i]=="à" or mot_a_trouver_list[i]=="â"):
-                mot_cache_list[2*i] = mot_a_trouver_list[i]        
-            if mot_a_trouver_list[i] == lettre:
-                mot_cache_list[2*i] = lettre
+            char_mot = mot_a_trouver_list[i]
+            match (lettre, char_mot):
+                case ("e", "é" | "è" | "ê") | ("é" | "è" | "ê", "e"):
+                    mot_cache_list[2*i] = char_mot
+                case ("c", "ç"):
+                    mot_cache_list[2*i] = char_mot
+                case ("u", "ù"):
+                    mot_cache_list[2*i] = char_mot
+                case ("a", "à" | "â"):
+                    mot_cache_list[2*i] = char_mot
+                case _ if lettre == char_mot:
+                    mot_cache_list[2*i] = lettre
         mot_cache = "".join(mot_cache_list)
         nb_l+=1
         return mot_cache, vie
