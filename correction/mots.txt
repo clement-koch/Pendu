@@ -13,6 +13,7 @@ chien
 fleur
 pomme
 ballon
+iop
 
 ordinateur
 elephant
@@ -44,3 +45,4 @@ extraterrestre
 pharmaceutical
 onomatopee
 bibliothèque
+arc-en-ciel

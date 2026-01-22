@@ -58,8 +58,12 @@ def mot_to_undersocre(mot):
     underscore=[]
     mot_cache=""
     for i in range (len(mot)):
-        underscore.append("_")
-        underscore.append(" ")
+        if mot[i]==" " or mot[i]=="-":
+            underscore.append("-")
+            underscore.append(" ")
+        else:    
+            underscore.append("_")
+            underscore.append(" ")
     mot_cache="".join(underscore)
     return mot_cache
 
@@ -194,7 +198,7 @@ def ajouter_score(nom_joueur, points,highscores):
 def input_lettre(lettre):
     global list_lettres
     #lettre = input("Entrez une lettre : ").lower()
-    if len(lettre) != 1 or not lettre.isalpha():
+    if len(lettre) != 1 or not lettre.isalpha() :
         print("Veuillez entrer une seule lettre valide.")
         return None
     elif lettre in list_lettres:
@@ -204,8 +208,14 @@ def input_lettre(lettre):
     return lettre
 
 def verif_ajout(mot):
-    if not mot.isalpha():
-        return "Le mot ne doit contenir que des lettres."
+    if not mot:
+        return "Le mot ne peut pas être vide."
+    
+    # Remplacer les espaces et tirets par des séparateurs temporaires pour la vérification
+    mot_sans_separateurs = mot.replace(" ", "").replace("-", "")
+    
+    if not mot_sans_separateurs.isalpha():
+        return "Le mot ne doit contenir que des lettres, espaces et tirets."
     else:
         return "Mot valide."
     

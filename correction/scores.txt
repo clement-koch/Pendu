@@ -16,11 +16,27 @@
         "Score": 150.0
     },
     {
-        "Nom": "mah",
-        "Score": 100
+        "Nom": "ouais",
+        "Score": 150.0
     },
     {
-        "Nom": "pas",
-        "Score": 0.0
+        "Nom": "temna",
+        "Score": 150.0
+    },
+    {
+        "Nom": "test",
+        "Score": 150.0
+    },
+    {
+        "Nom": "bigshot",
+        "Score": 150.0
+    },
+    {
+        "Nom": "k",
+        "Score": 150.0
+    },
+    {
+        "Nom": "moj",
+        "Score": 150.0
     }
 ]

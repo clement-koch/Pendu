@@ -184,7 +184,7 @@ def input_player_name():
                 elif event.key == pygame.K_BACKSPACE:
                     player_name = player_name[:-1]
                 elif len(player_name) < 20:  # Limiter à 20 caractères
-                    player_name += event.unicode
+                    player_name += event.unicode             
     
     return player_name.strip()
 
@@ -333,6 +333,7 @@ def game():
         if event.type == pygame.MOUSEBUTTONDOWN and game_status != None:
             if event.button == 1:
                 list_words, hidden_word, str_word, life, game_status,list_letter = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter)
+                music(True)
                 name_asked = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_s and game_status != None:
@@ -360,6 +361,9 @@ def game():
                 afficher_score()
             name_asked = True
     elif game_status == 'victoire':
+        if not name_asked:
+            pygame.mixer.music.load("assets/sons/gagne.mp3")
+            pygame.mixer.music.play(-1)
         
         print_game_over_window(game_status)
         if not name_asked:
@@ -370,7 +374,7 @@ def game():
                 highscore(points, highscores)
                 ajouter_score(player_name, points, highscores)
                 afficher_score()
-            name_asked = True 
+            name_asked = True   
     
 
     return False, True, False, True
