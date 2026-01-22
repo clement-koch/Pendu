@@ -19,15 +19,15 @@ def separation(nv):
             indice+=1
             if mot=="\n":
                 lst_indice.append(indice)
-        if nv==1:
+        if nv==0:
             for i in range(0,lst_indice[0]-1):
                 lst_1.append(lst_mot[i])
             return lst_1
-        elif nv==2:
+        elif nv==1:
             for j in range(lst_indice[0],lst_indice[1]-1):
                 lst_2.append(lst_mot[j])
             return lst_2
-        elif nv==3:
+        elif nv==2:
             for h in range (lst_indice[1],len(lst_mot)):
                 lst_3.append(lst_mot[h])
             return lst_3
@@ -65,36 +65,37 @@ def mot_to_undersocre(mot):
 
 def ajout_mot_difficulte(nv_mot):
     
-    nb_caractere=len(nv_mot)
-    print(nb_caractere)
+    if nv_mot != None :
+        nb_caractere=len(nv_mot)
+        print(nb_caractere)
 
-    if nb_caractere<=7:
-        nv=1
-    elif nb_caractere<=10:
-        nv=2
-    else:
-        nv=3
-    print(nv)
-    with open ("mots.txt","r",encoding="utf-8") as f:
-        lignes=f.readlines()
+        if nb_caractere<=7:
+            nv=1
+        elif nb_caractere<=10:
+            nv=2
+        else:
+            nv=3
+        print(nv)
+        with open ("mots.txt","r",encoding="utf-8") as f:
+            lignes=f.readlines()
 
-    indice_insertion=None
-    compteur_separateur=0
-    for i, ligne in enumerate(lignes):
-        if ligne.strip()=="":
-            compteur_separateur+=1
-            if  compteur_separateur==nv:
-                indice_insertion=i
-                break
+        indice_insertion=None
+        compteur_separateur=0
+        for i, ligne in enumerate(lignes):
+            if ligne.strip()=="":
+                compteur_separateur+=1
+                if  compteur_separateur==nv:
+                    indice_insertion=i
+                    break
 
-    if indice_insertion is None:
-        indice_insertion=len(lignes)
+        if indice_insertion is None:
+            indice_insertion=len(lignes)
     
-    lignes.insert(indice_insertion,nv_mot+"\n")
+        lignes.insert(indice_insertion,nv_mot+"\n")
 
-    with open("mots.txt","w",encoding="utf-8") as f:
-        f.writelines(lignes)
-    print(indice_insertion)
+        with open("mots.txt","w",encoding="utf-8") as f:
+            f.writelines(lignes)
+        print(indice_insertion)
 
 def verif_mot(lettre,mot_cache,mot_a_trouver,vie):
     global nb_l
@@ -129,10 +130,10 @@ def ajout_mot(nouveau_mot):
     for mot in liste_mots:
         if nouveau_mot == mot.strip().lower():
             print("Le mot existe déjà dans la liste.")
-            return ajout_mot()
+            return None
     
     if verif_ajout(nouveau_mot) != "Mot valide.":
-        return ajout_mot()
+        return None
     else:
         return nouveau_mot
     
@@ -142,8 +143,8 @@ def verification_victoire(mot_cache,vie):
     elif "_" not in mot_cache:
         return "victoire"
     
-def score(vie,nb_l):
-    global nv
+def score(vie, nb_l, nv):
+    #global nv
     points = 0
     if nb_l > 0:
         points += (nb_l * 5)
@@ -165,11 +166,11 @@ def score(vie,nb_l):
         case _:
             points += 0 
     match nv:
-        case 1:
+        case 0:
             points *=1
-        case 2:
+        case 1:
             points *=1.5
-        case 3:
+        case 2:
             points *=2
     return points
 
@@ -190,9 +191,9 @@ def ajouter_score(nom_joueur, points,highscores):
         highscores.pop()
     sauvegarder_score(highscores)
 
-def input_lettre():
+def input_lettre(lettre):
     global list_lettres
-    lettre = input("Entrez une lettre : ").lower()
+    #lettre = input("Entrez une lettre : ").lower()
     if len(lettre) != 1 or not lettre.isalpha():
         print("Veuillez entrer une seule lettre valide.")
         return input_lettre()
