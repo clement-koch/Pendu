@@ -1,42 +1,26 @@
 [
     {
-        "Nom": "test",
+        "Nom": "ok",
         "Score": 150.0
     },
     {
-        "Nom": "test",
+        "Nom": "ok",
         "Score": 150.0
     },
     {
-        "Nom": "test",
+        "Nom": "oh",
         "Score": 150.0
     },
     {
-        "Nom": "test",
+        "Nom": "ok",
         "Score": 150.0
     },
     {
-        "Nom": "test",
-        "Score": 150.0
+        "Nom": "mah",
+        "Score": 100
     },
     {
-        "Nom": "test",
-        "Score": 150.0
-    },
-    {
-        "Nom": "test",
-        "Score": 150.0
-    },
-    {
-        "Nom": "test",
-        "Score": 150.0
-    },
-    {
-        "Nom": "test",
-        "Score": 150.0
-    },
-    {
-        "Nom": "test",
-        "Score": 150.0
+        "Nom": "pas",
+        "Score": 0.0
     }
 ]

@@ -17,6 +17,7 @@ list_words = []
 nb_l = 0
 writing = False
 game_status = None
+name_asked = False
 
 
 def print_menu():
@@ -108,6 +109,28 @@ def print_game_over_window(game_status) :
     txt_game_status = font_title.render(game_status, 1, (0, 0, 0))
     screen.blit(txt_game_status, (320, 220))
 
+def print_scores_window(highscores):
+    screen.blit(menu_background, (0,0))
+    font_title = pygame.font.SysFont('Rockwell', 40, bold=True)
+    font_score = pygame.font.SysFont('Rockwell', 25)
+    font_small = pygame.font.SysFont('Rockwell', 18)
+    
+    pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(150, 50, 700, 650))
+    txt_title = font_title.render("MEILLEURS SCORES", 1, (0, 0, 0))
+    screen.blit(txt_title, (300, 80))
+    
+    if not highscores:
+        txt_empty = font_score.render("Aucun score enregistré", 1, (100, 100, 100))
+        screen.blit(txt_empty, (280, 200))
+    else:
+        y_pos = 150
+        for i, score_entry in enumerate(highscores):
+            txt_score = font_score.render(f"{i+1}. {score_entry['Nom']} - {score_entry['Score']} pts", 1, (0, 0, 0))
+            screen.blit(txt_score, (200, y_pos))
+            y_pos += 50
+    
+    txt_back = font_small.render("Appuyez sur une touche pour revenir", 1, (100, 100, 100))
+    screen.blit(txt_back, (260, 650))
 
 
 def music(start):
@@ -117,6 +140,53 @@ def music(start):
     else:
         pygame.mixer.music.load("assets/sons/menu.mp3")
         pygame.mixer.music.play(-1)
+
+def input_player_name():
+    """Affiche un écran pour saisir le nom du joueur"""
+    player_name = ""
+    input_active = True
+    
+    while input_active:
+        screen.blit(menu_background, (0, 0))
+        
+        font_title = pygame.font.SysFont('Rockwell', 40, bold=True)
+        font_input = pygame.font.SysFont('Rockwell', 30)
+        font_small = pygame.font.SysFont('Rockwell', 20)
+        
+        # Fond blanc pour le formulaire
+        pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(150, 200, 700, 300))
+        
+        # Titre
+        txt_title = font_title.render("Entrez votre nom", 1, (0, 0, 0))
+        screen.blit(txt_title, (280, 230))
+        
+        # Champ de texte
+        pygame.draw.rect(screen, (200, 200, 200), pygame.Rect(200, 320, 600, 50))
+        pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(200, 320, 600, 50), 2)
+        txt_name = font_input.render(player_name if player_name else "Votre nom...", 1, (0, 0, 0))
+        screen.blit(txt_name, (220, 330))
+        
+        # Instructions
+        txt_info = font_small.render("Appuyez sur ENTRÉE pour confirmer", 1, (100, 100, 100))
+        screen.blit(txt_info, (240, 400))
+        
+        pygame.display.flip()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return None
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    if player_name.strip():  # Vérifier que le nom n'est pas vide
+                        input_active = False
+                    else:
+                        player_name = ""  # Réinitialiser si le nom est vide
+                elif event.key == pygame.K_BACKSPACE:
+                    player_name = player_name[:-1]
+                elif len(player_name) < 20:  # Limiter à 20 caractères
+                    player_name += event.unicode
+    
+    return player_name.strip()
 
 def write(string):
     global str_word_to_add
@@ -204,7 +274,7 @@ def settings():
 
 #========= Jeu ==========#
 def game():
-    global list_words, list_letter, hidden_word, life, str_word,game_status
+    global list_words, list_letter, hidden_word, life, str_word, game_status, name_asked
     
     if list_words == []:
         list_words = separation(difficulty)
@@ -227,6 +297,7 @@ def game():
                 if btn_exit.collidepoint(event.pos):
                     pygame.mixer.Sound("assets/sons/clique.wav").play()
                     music(False)
+                    list_words, hidden_word, str_word, life, game_status,list_letter = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter)
                     return True, False, False, True
                 if game_status == None :
                     row = 0
@@ -260,21 +331,48 @@ def game():
         
         # Gestion du clic pour recommencer après victoire/défaite
         if event.type == pygame.MOUSEBUTTONDOWN and game_status != None:
-            list_words, hidden_word, str_word, life, game_status,list_letter = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter)
+            if event.button == 1:
+                list_words, hidden_word, str_word, life, game_status,list_letter = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter)
+                name_asked = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_s and game_status != None:
+                print_scores_window(charger_scores())
+                pygame.display.flip()
+                waiting = True
+                while waiting:
+                    for wait_event in pygame.event.get():
+                        if wait_event.type == pygame.QUIT:
+                            waiting = False
+                            return True, False, False, False
+                        if wait_event.type == pygame.KEYDOWN or wait_event.type == pygame.MOUSEBUTTONDOWN:
+                            waiting = False
     
     if game_status == 'defaite':
         pygame.mixer.Sound("assets/sons/mort.mp3").play()
         print_game_over_window(game_status)
-        points = score(life, nb_l, difficulty)
-        highscores = charger_scores()
-        player_name = "test" # à modifier à un input pygame
-        highscore(points, highscores)
-        ajouter_score(player_name, points, highscores)
-        afficher_score()
-    elif game_status == 'victoire':       
+        if not name_asked:
+            points = score(life, nb_l, difficulty)
+            highscores = charger_scores()
+            player_name = input_player_name()
+            if player_name:
+                highscore(points, highscores)
+                ajouter_score(player_name, points, highscores)
+                afficher_score()
+            name_asked = True
+    elif game_status == 'victoire':
+        
         print_game_over_window(game_status)
-        print("") 
+        if not name_asked:
+            points = score(life, nb_l, difficulty)
+            highscores = charger_scores()
+            player_name = input_player_name()
+            if player_name:
+                highscore(points, highscores)
+                ajouter_score(player_name, points, highscores)
+                afficher_score()
+            name_asked = True 
     
+
     return False, True, False, True
 
 # Initialisation de pygame
@@ -318,7 +416,6 @@ music(False)
 # Boucle principale
 while running:
     pygame.display.flip()
-    
     if menu_active:
         menu_active, start, settigs_active, running = menu()
     
