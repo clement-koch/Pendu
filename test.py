@@ -75,28 +75,10 @@ def print_moon() :
     elif life <= 4 :
         screen.blit(img_moon1, (122, 20))
     
-
-    
-def print_game():
-    pygame.display.get_surface().fill((255,255,255))
-    screen.blit(img_play_background, (0,0))
-    font = pygame.font.SysFont('Rockwell', 30, bold=True)
-
-    #rect_hiden_word = pygame.Rect(330, 370, 300, 35)
-    txt_hidden_word = font.render(hidden_word, 1, (0,0,0))
-
-    #pygame.draw.rect(screen, (255, 255, 255), rect_hiden_word)
-    screen.blit(img_hidden_word, (315, 370))
-    
-    screen.blit(img_btn_exit, (910,0))
-    screen.blit(txt_hidden_word, (355, 380))
-    print_potence()
-    print_moon()
-
-
-
+def print_keyboard() :
     row = 0
     column = 0
+    font = pygame.font.SysFont('Rockwell', 30, bold=True)
     for i in range(len(list_alph)):
         letter = font.render(list_alph[i], 1, (245, 222, 179))
         case = None
@@ -121,6 +103,21 @@ def print_game():
             screen.blit(letter, ((x+15+30), y+5))
 
         column += 1
+    
+def print_game():
+    pygame.display.get_surface().fill((255,255,255))
+    screen.blit(img_play_background, (0,0))
+    font = pygame.font.SysFont('Rockwell', 30, bold=True)
+
+    txt_hidden_word = font.render(hidden_word, 1, (0,0,0))
+
+    screen.blit(img_hidden_word, (315, 370))    
+    screen.blit(img_btn_exit, (910,0))
+    screen.blit(txt_hidden_word, (355, 380))
+    print_potence()
+    print_moon()
+    print_keyboard()
+
 
 def print_game_over_window(game_status, score=None) :
     font_title = pygame.font.SysFont('Rockwell', 39, bold=True)
