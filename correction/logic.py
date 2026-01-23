@@ -101,8 +101,7 @@ def ajout_mot_difficulte(nv_mot):
             f.writelines(lignes)
         print(indice_insertion)
 
-def verif_mot(lettre,mot_cache,mot_a_trouver,vie):
-    global nb_l
+def verif_mot(lettre,mot_cache,mot_a_trouver,vie,nbl_l):
     mot_a_trouver_list=list(mot_a_trouver)  
     if lettre in mot_a_trouver:
         mot_cache_list = list(mot_cache)
@@ -120,11 +119,11 @@ def verif_mot(lettre,mot_cache,mot_a_trouver,vie):
                 case _ if lettre == char_mot:
                     mot_cache_list[2*i] = lettre
         mot_cache = "".join(mot_cache_list)
-        nb_l+=1
-        return mot_cache, vie
+        nbl_l+=1
+        return mot_cache, vie,True,nbl_l
     else:
         vie -= 1
-        return mot_cache, vie
+        return mot_cache, vie,False,nbl_l
     
 def ajout_mot(nouveau_mot):
     with open("mots.txt","r", encoding="utf-8") as f:
@@ -218,35 +217,6 @@ def verif_ajout(mot):
         return "Le mot ne doit contenir que des lettres, espaces et tirets."
     else:
         return "Mot valide."
-    
-def jeu():
-    global list_lettres
-    list_lettres = []
-    liste = niveau()  # niveau() retourne déjà la liste des mots pour le niveau choisi
-    mot=choix_mot(liste)
-    mot_cache=mot_to_undersocre(mot)
-    vie=7
-    victoire=None
-    nv_mot=ajout_mot()
-    ajout_mot_difficulte(nv_mot)
-    while victoire is None:
-        print(mot_cache)
-        print(f"Il vous reste {vie} vies.")
-        lettre=input_lettre()
-        mot_cache, vie=verif_mot(lettre,mot_cache,mot,vie)
-        victoire=verification_victoire(mot_cache,vie)
-        if victoire is not None:
-            if victoire == "victoire":
-                print(f"Félicitations ! Vous avez trouvé le mot : {mot}")
-            else:
-                print(f"Dommage ! Vous avez perdu. Le mot était : {mot}")
-            nom_joueur = input("Entrez votre nom pour enregistrer votre score : ")
-            points = score(vie, nb_l)
-            print(f"Votre score est de {points} points.")
-            highscores = charger_scores()
-            highscore(points, highscores)
-            ajouter_score(nom_joueur, points, highscores)
-            afficher_score()
 
 def charger_scores(score_file="scores.txt"):
     try:
@@ -269,7 +239,7 @@ def afficher_score(score_file="scores.txt"):
     except FileNotFoundError:
         print("Aucun score enregistré pour le moment.")
 
-def recommencer(nbl,mot_cache,mot,vie,vicoire,liste_lettre):
+def recommencer(nbl,mot_cache,mot,vie,vicoire,liste_lettre, nb_l):
     global list_lettres
     vie =7
     nbl=[]
@@ -278,10 +248,5 @@ def recommencer(nbl,mot_cache,mot,vie,vicoire,liste_lettre):
     victoire=None
     liste_lettre=[]
     list_lettres=[]
-    return nbl,mot_cache,mot,vie,victoire,liste_lettre
-
-def main():
-    jeu()
-
-if __name__ == "__main__":
-    main()    
+    nb_l = 0
+    return nbl,mot_cache,mot,vie,victoire,liste_lettre, nb_l
