@@ -239,7 +239,7 @@ def afficher_score(score_file="scores.txt"):
     except FileNotFoundError:
         print("Aucun score enregistré pour le moment.")
 
-def recommencer(nbl,mot_cache,mot,vie,vicoire,liste_lettre, nb_l, player_name):
+def recommencer(nbl,mot_cache,mot,vie,vicoire,liste_lettre, nb_l, player_name, play_sound_dead):
     global list_lettres
     vie =7
     nbl=[]
@@ -250,4 +250,5 @@ def recommencer(nbl,mot_cache,mot,vie,vicoire,liste_lettre, nb_l, player_name):
     list_lettres=[]
     nb_l = 0
     player_name = ""
-    return nbl,mot_cache,mot,vie,victoire,liste_lettre, nb_l, player_name
+    play_sound_dead = True
+    return nbl,mot_cache,mot,vie,victoire,liste_lettre, nb_l, player_name, play_sound_dead

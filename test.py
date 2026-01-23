@@ -17,6 +17,7 @@ list_words = []
 nb_l = 0
 writing = False
 victory_music_played = False
+play_sound_dead = True
 player_name = ""
 
 def print_menu():
@@ -190,26 +191,27 @@ def remove(word):
 
 def print_scores_window(highscores):
     screen.blit(menu_background, (0,0))
-    font_title = pygame.font.SysFont('Rockwell', 40, bold=True)
+    font_title = pygame.font.SysFont('Rockwell', 35, bold=True)
     font_score = pygame.font.SysFont('Rockwell', 25)
     font_small = pygame.font.SysFont('Rockwell', 18)
     
-    pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(150, 50, 700, 650))
+    #pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(150, 50, 700, 650))
+    screen.blit(score_background, (150, 50))
     txt_title = font_title.render("MEILLEURS SCORES", 1, (0, 0, 0))
-    screen.blit(txt_title, (300, 80))
+    screen.blit(txt_title, (320, 150))
     
     if not highscores:
         txt_empty = font_score.render("Aucun score enregistré", 1, (100, 100, 100))
         screen.blit(txt_empty, (280, 200))
     else:
-        y_pos = 150
+        y_pos = 200
         for i, score_entry in enumerate(highscores):
             txt_score = font_score.render(f"{i+1}. {score_entry['Nom']} - {score_entry['Score']} pts", 1, (0, 0, 0))
-            screen.blit(txt_score, (200, y_pos))
-            y_pos += 50
+            screen.blit(txt_score, (270, y_pos))
+            y_pos += 40
     
-    txt_back = font_small.render("Appuyez sur une touche pour revenir", 1, (100, 100, 100))
-    screen.blit(txt_back, (260, 650))
+    txt_back = font_small.render("Appuyez sur une touche pour revenir", 1, (195, 195, 195))
+    screen.blit(txt_back, (330, 630))
 
 
 #======== Menu Principal ========#
@@ -300,7 +302,7 @@ def settings():
 
 #========= Jeu ==========#
 def game():
-    global list_words, list_letter, hidden_word, life, str_word, victory_music_played, nb_l, writing, player_name
+    global list_words, list_letter, hidden_word, life, str_word, victory_music_played, nb_l, writing, player_name, play_sound_dead, img_play_background
     valid_letter = None
     
     if list_words == []:
@@ -321,8 +323,9 @@ def game():
         highscores = charger_scores()
         print_game_over_window(game_status, points)
         #player_name = "test" # à modifier à un input pygame
-        if game_status == 'defaite':
+        if game_status == 'defaite'and play_sound_dead : 
             pygame.mixer.Sound("assets/sons/mort.mp3").play()
+            play_sound_dead = False
         elif game_status == 'victoire':
             if not victory_music_played:
                 pygame.mixer.music.load("assets/sons/gagne.mp3")
@@ -337,7 +340,8 @@ def game():
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 if btn_exit.collidepoint(event.pos):
-                    list_words, hidden_word, str_word, life, game_status,list_letter, nb_l, player_name = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter, nb_l, player_name)
+                    list_words, hidden_word, str_word, life, game_status,list_letter, nb_l, player_name, play_sound_dead = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter, nb_l, player_name, play_sound_dead)
+                    img_play_background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu.png'),(1000,750))
                     pygame.mixer.Sound("assets/sons/clique.wav").play()
                     music(False)
                     return True, False, False, True
@@ -366,7 +370,8 @@ def game():
                     ajouter_score(player_name, points, highscores)
                 else:
                     if btn_replay.collidepoint(event.pos):
-                        list_words, hidden_word, str_word, life, game_status,list_letter, nb_l, player_name = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter, nb_l, player_name)
+                        list_words, hidden_word, str_word, life, game_status,list_letter, nb_l, player_name, play_sound_dead = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter, nb_l, player_name, play_sound_dead)
+                        img_play_background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu.png'),(1000,750))
                         victory_music_played = False
                     writing = False
 
@@ -403,6 +408,7 @@ screen = pygame.display.set_mode((1000, 750))
 # Chargement des images
 menu_background = pygame.transform.scale(pygame.image.load('assets/images/fond_menu.png'), (1000, 750))
 settings_background = pygame.transform.scale(pygame.image.load('assets/images/fond_settings.png'), (1000, 750))
+score_background = pygame.transform.scale(pygame.image.load('assets/images/parchemin.png'), (700, 650))
 img_play_background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu.png'),(1000,750))
 img_btn_play = pygame.transform.scale(pygame.image.load('assets/images/jouer.png'), (300, 150))
 img_btn_settings = pygame.transform.scale(pygame.image.load('assets/images/reglages.png'), (300, 150))
@@ -422,6 +428,7 @@ img_moon1 = pygame.transform.scale(pygame.image.load('assets/images/lune1.png'),
 img_moon0 = pygame.transform.scale(pygame.image.load('assets/images/lune0.png'), (120, 105))
 img_red_moon = pygame.transform.scale(pygame.image.load('assets/images/lune_rouge.png'), (150, 120))
 img_btn_replay = pygame.transform.scale(pygame.image.load('assets/images/replay.png'), (50, 49))
+
 
 
 # Définition des boutons
