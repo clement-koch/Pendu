@@ -224,6 +224,21 @@ def menu():
                     pygame.mixer.Sound("assets/sons/clique.wav").play()
                     pygame.quit()
                     return False, False, False, False
+                
+        #new        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_s:
+                print_scores_window(charger_scores())
+                pygame.display.flip()
+                waiting = True
+                while waiting:
+                    for wait_event in pygame.event.get():
+                        if wait_event.type == pygame.QUIT:
+                            waiting = False
+                            return True, False, False, False
+                        if wait_event.type == pygame.KEYDOWN or wait_event.type == pygame.MOUSEBUTTONDOWN:
+                            waiting = False    
+            
     
     return True, False, False, True
 
@@ -335,19 +350,6 @@ def game():
                 list_words, hidden_word, str_word, life, game_status,list_letter = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter)
                 music(True)
                 name_asked = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_s and game_status != None:
-                print_scores_window(charger_scores())
-                pygame.display.flip()
-                waiting = True
-                while waiting:
-                    for wait_event in pygame.event.get():
-                        if wait_event.type == pygame.QUIT:
-                            waiting = False
-                            return True, False, False, False
-                        if wait_event.type == pygame.KEYDOWN or wait_event.type == pygame.MOUSEBUTTONDOWN:
-                            waiting = False
-    
     if game_status == 'defaite':
         pygame.mixer.Sound("assets/sons/mort.mp3").play()
         print_game_over_window(game_status)
