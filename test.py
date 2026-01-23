@@ -69,6 +69,13 @@ def print_potence() :
     if life < 7 :
         screen.blit(pygame.transform.scale(pygame.image.load(f'assets/images//potence/potence{life}.png'), (350, 260)),(300, 30))
 
+def print_moon() :
+    if life <= 2 :
+        screen.blit(img_moon2, (105, 20))
+    elif life <= 4 :
+        screen.blit(img_moon1, (122, 20))
+    
+
     
 def print_game():
     pygame.display.get_surface().fill((255,255,255))
@@ -84,6 +91,9 @@ def print_game():
     screen.blit(img_btn_exit, (910,0))
     screen.blit(txt_hidden_word, (355, 380))
     print_potence()
+    print_moon()
+
+
 
     row = 0
     column = 0
@@ -324,6 +334,8 @@ img_case = pygame.transform.scale(pygame.image.load('assets/images/case.png'), (
 img_red_case = pygame.transform.scale(pygame.image.load('assets/images/case_rouge.png'), (50, 50))
 img_grenn_case = pygame.transform.scale(pygame.image.load('assets/images/case_verte.png'), (50, 50))
 img_hidden_word = pygame.transform.scale(pygame.image.load('assets/images/papier.png'), (300, 50))
+img_moon2 = pygame.transform.scale(pygame.image.load('assets/images/lune2.png'), (150, 120))
+img_moon1 = pygame.transform.scale(pygame.image.load('assets/images/lune1.png'), (120, 105))
 
 
 # Définition des boutons
