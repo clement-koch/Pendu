@@ -16,6 +16,8 @@ hidden_word = '_'
 list_words = []
 nb_l = 0
 writing = False
+victory_music_played = False
+player_name = ""
 
 def print_menu():
     screen.blit(menu_background, (0,0))
@@ -70,10 +72,16 @@ def print_potence() :
         screen.blit(pygame.transform.scale(pygame.image.load(f'assets/images//potence/potence{life}.png'), (350, 260)),(300, 30))
 
 def print_moon() :
-    if life <= 2 :
-        screen.blit(img_moon2, (105, 20))
+    global img_play_background
+    if life <= 1 :
+        img_play_background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu_rouge.png'),(1000,750))
+        screen.blit(img_red_moon, (105, 20))
+    elif life == 2 :
+        screen.blit(img_moon2, (105, 20)) 
     elif life <= 4 :
         screen.blit(img_moon1, (122, 20))
+    elif life <= 6 :
+        screen.blit(img_moon0, (122, 20))
     
 def print_keyboard() :
     row = 0
@@ -120,15 +128,36 @@ def print_game():
 
 
 def print_game_over_window(game_status, score=None) :
+    global timer, bar_change
     font_title = pygame.font.SysFont('Rockwell', 39, bold=True)
     font = pygame.font.SysFont('Rockwell', 30, bold=True)
-    txt_game_status = font_title.render(game_status, 1, (245, 222, 179))
+    txt_game_status = font_title.render(game_status.upper(), 1, (245, 222, 179))
     screen.blit(pygame.transform.scale(img_sign, (600, 300)), (280, -100))
-    screen.blit(txt_game_status, (450, 50))
+    screen.blit(txt_game_status, (480, 50))
     if score != None :
         txt_score = font.render(f"Score : {score}", 1, (245, 222, 179))
-        screen.blit(txt_score, (450, 110))
+        screen.blit(txt_score, (490, 110))
 
+
+    txt_name = font.render("Nom :", 1, (245, 222, 179))
+    font = pygame.font.Font(None, 30)
+    word_size = font.size(player_name)[0]
+    txt_player_name = font.render(player_name, 1, (0,0,0))
+
+    bar = pygame.Rect(480+word_size, 155, 1, 27)
+    screen.blit(pygame.transform.scale(pygame.image.load('assets/images/papier.png'), (300, 35)), (470, 150))
+
+    if datetime.now() >= timer + timedelta(seconds=0.5) and writing:
+        bar_change = not bar_change
+        timer = datetime.now()
+    if bar_change:
+        pygame.draw.rect(screen, (0, 0, 0), bar)
+
+    screen.blit(img_btn_replay, (800, 60))
+    screen.blit(img_btn_add_word, (770, 150))
+    screen.blit(txt_player_name, (480, 160))
+    screen.blit(txt_name, (360, 150))
+    
 
 def music(start):
     if start:
@@ -147,17 +176,40 @@ def valid_letter_sound(valid_letter) :
     return None
 
 
-def write(string):
-    global str_word_to_add
-    str_word_to_add += string
+def write(word, letter):
+    word += letter
+    return word
 
-
-def remove():
+def remove(word):
     global str_word_to_add
     removed_word = ""
-    for i in range(len(str_word_to_add)-1):
-        removed_word += str_word_to_add[i]
-    str_word_to_add = removed_word
+    for i in range(len(word)-1):
+        removed_word += word[i]
+    return removed_word
+
+
+def print_scores_window(highscores):
+    screen.blit(menu_background, (0,0))
+    font_title = pygame.font.SysFont('Rockwell', 40, bold=True)
+    font_score = pygame.font.SysFont('Rockwell', 25)
+    font_small = pygame.font.SysFont('Rockwell', 18)
+    
+    pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(150, 50, 700, 650))
+    txt_title = font_title.render("MEILLEURS SCORES", 1, (0, 0, 0))
+    screen.blit(txt_title, (300, 80))
+    
+    if not highscores:
+        txt_empty = font_score.render("Aucun score enregistré", 1, (100, 100, 100))
+        screen.blit(txt_empty, (280, 200))
+    else:
+        y_pos = 150
+        for i, score_entry in enumerate(highscores):
+            txt_score = font_score.render(f"{i+1}. {score_entry['Nom']} - {score_entry['Score']} pts", 1, (0, 0, 0))
+            screen.blit(txt_score, (200, y_pos))
+            y_pos += 50
+    
+    txt_back = font_small.render("Appuyez sur une touche pour revenir", 1, (100, 100, 100))
+    screen.blit(txt_back, (260, 650))
 
 
 #======== Menu Principal ========#
@@ -185,6 +237,19 @@ def menu():
                     pygame.mixer.Sound("assets/sons/clique.wav").play()
                     pygame.quit()
                     return False, False, False, False
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_s:
+                print_scores_window(charger_scores())
+                pygame.display.flip()
+                waiting = True
+                while waiting:
+                    for wait_event in pygame.event.get():
+                        if wait_event.type == pygame.QUIT:
+                            waiting = False
+                            return True, False, False, False
+                        if wait_event.type == pygame.KEYDOWN or wait_event.type == pygame.MOUSEBUTTONDOWN:
+                            waiting = False         
     
     return True, False, False, True
 
@@ -227,15 +292,15 @@ def settings():
         
         if event.type == pygame.KEYDOWN and writing:
             if event.key == 8:
-                remove()
+                str_word_to_add = remove(str_word_to_add)
             else:
-                write(event.unicode)
+                str_word_to_add = write(str_word_to_add, event.unicode)
     
     return False, False, True, True
 
 #========= Jeu ==========#
 def game():
-    global list_words, list_letter, hidden_word, life, str_word
+    global list_words, list_letter, hidden_word, life, str_word, victory_music_played, nb_l, writing, player_name
     valid_letter = None
     
     if list_words == []:
@@ -249,7 +314,22 @@ def game():
     
     print_game()
     game_status = verification_victoire(hidden_word, life)
-    
+
+    # fin de partie :
+    if game_status != None :
+        points = score(life, nb_l, difficulty)
+        highscores = charger_scores()
+        print_game_over_window(game_status, points)
+        #player_name = "test" # à modifier à un input pygame
+        if game_status == 'defaite':
+            pygame.mixer.Sound("assets/sons/mort.mp3").play()
+        elif game_status == 'victoire':
+            if not victory_music_played:
+                pygame.mixer.music.load("assets/sons/gagne.mp3")
+                pygame.mixer.music.play(-1)
+                victory_music_played = True       
+
+    # commandes :
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return True, False, False, False
@@ -257,7 +337,7 @@ def game():
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 if btn_exit.collidepoint(event.pos):
-                    list_words, hidden_word, str_word, life, game_status,list_letter = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter)
+                    list_words, hidden_word, str_word, life, game_status,list_letter, nb_l, player_name = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter, nb_l, player_name)
                     pygame.mixer.Sound("assets/sons/clique.wav").play()
                     music(False)
                     return True, False, False, True
@@ -272,38 +352,44 @@ def game():
                             if pygame.Rect(250+(column*(50+10)), 510+(row*(50+10)), 50, 50).collidepoint(event.pos) and list_alph[i] not in list_letter:
                                 letter = input_lettre(list_alph[i])
                                 list_letter.append(letter)
-                                hidden_word, life, valid_letter = verif_mot(letter,hidden_word,str_word,life)
+                                hidden_word, life, valid_letter, nb_l = verif_mot(letter,hidden_word,str_word,life, nb_l)
                         else: # derniere ligne du clavier
                             if pygame.Rect(250+30+(column*(50+10)), 510+(row*(50+10)), 50, 50).collidepoint(event.pos) and list_alph[i] not in list_letter:
                                 letter = input_lettre(list_alph[i])
                                 list_letter.append(letter)
-                                hidden_word, life, valid_letter = verif_mot(letter,hidden_word,str_word,life)
+                                hidden_word, life, valid_letter, nb_l = verif_mot(letter,hidden_word,str_word,life, nb_l)
                         column += 1
+                elif game_status != None and  player_name_input.collidepoint(event.pos):
+                    writing = True
+                elif game_status != None and btn_add_score.collidepoint(event.pos) and player_name != "" :
+                    highscore(points, highscores)
+                    ajouter_score(player_name, points, highscores)
+                else:
+                    if btn_replay.collidepoint(event.pos):
+                        list_words, hidden_word, str_word, life, game_status,list_letter, nb_l, player_name = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter, nb_l, player_name)
+                        victory_music_played = False
+                    writing = False
 
-        
-        if event.type == pygame.KEYDOWN and game_status == None :
-            if event.unicode not in list_letter :
+        if event.type == pygame.KEYDOWN :
+            #racourcie clavier
+            if event.unicode.isalpha() and event.unicode not in list_letter and game_status == None:
                 letter = input_lettre(event.unicode)
                 list_letter.append(letter)
-                hidden_word, life, valid_letter = verif_mot(letter,hidden_word,str_word,life)
+                hidden_word, life, valid_letter, nb_l = verif_mot(letter,hidden_word,str_word,life, nb_l)
+            # input name
+            elif game_status != None and writing and event.key == 8:
+                player_name = remove(player_name)
+            elif game_status != None and writing:
+                player_name = write(player_name, event.unicode)
         
         # Gestion du clic pour recommencer après victoire/défaite
-        if event.type == pygame.MOUSEBUTTONDOWN and game_status != None:
-            list_words, hidden_word, str_word, life, game_status,list_letter = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter)
+        #if event.type == pygame.MOUSEBUTTONDOWN and game_status != None:
+            #list_words, hidden_word, str_word, life, game_status,list_letter, nb_l = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter, nb_l)
+            #victory_music_played = False
 
         valid_letter = valid_letter_sound(valid_letter)
 
-    if game_status == 'defaite':
-        pygame.mixer.Sound("assets/sons/mort.mp3").play()
-        points = score(life, nb_l, difficulty)
-        print_game_over_window(game_status, points)
-        highscores = charger_scores()
-        player_name = "test" # à modifier à un input pygame
-        highscore(points, highscores)
-        ajouter_score(player_name, points, highscores)
-        afficher_score()
-    elif game_status == 'victoire':
-        print_game_over_window(game_status)
+    
     
     return False, True, False, True
 
@@ -333,6 +419,9 @@ img_grenn_case = pygame.transform.scale(pygame.image.load('assets/images/case_ve
 img_hidden_word = pygame.transform.scale(pygame.image.load('assets/images/papier.png'), (300, 50))
 img_moon2 = pygame.transform.scale(pygame.image.load('assets/images/lune2.png'), (150, 120))
 img_moon1 = pygame.transform.scale(pygame.image.load('assets/images/lune1.png'), (120, 105))
+img_moon0 = pygame.transform.scale(pygame.image.load('assets/images/lune0.png'), (120, 105))
+img_red_moon = pygame.transform.scale(pygame.image.load('assets/images/lune_rouge.png'), (150, 120))
+img_btn_replay = pygame.transform.scale(pygame.image.load('assets/images/replay.png'), (50, 49))
 
 
 # Définition des boutons
@@ -344,6 +433,9 @@ btn_exit = pygame.Rect(915, 20, 75, 60)
 btn_settings = pygame.Rect(625, 283, 50, 40)
 btn_add_difficulty = pygame.Rect(600, 510, 50, 40)
 btn_less_difficulty = pygame.Rect(350, 510, 50, 40)
+player_name_input = pygame.Rect(470, 150, 300, 35)
+btn_replay = pygame.Rect(800, 60, 50, 48)
+btn_add_score = pygame.Rect(770, 150, 35, 35)
 
 # Variables d'état
 running = True
