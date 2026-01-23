@@ -117,10 +117,10 @@ def verif_mot(lettre,mot_cache,mot_a_trouver,vie):
                     mot_cache_list[2*i] = lettre
         mot_cache = "".join(mot_cache_list)
         nb_l+=1
-        return mot_cache, vie
+        return mot_cache, vie, True
     else:
         vie -= 1
-        return mot_cache, vie
+        return mot_cache, vie, False
     
 def ajout_mot(nouveau_mot):
     with open("mots.txt","r", encoding="utf-8") as f:
@@ -258,6 +258,17 @@ def afficher_score(score_file="scores.txt"):
                 print(f"{ligne}. {score['Nom']} - {score['Score']}")
     except FileNotFoundError:
         print("Aucun score enregistré pour le moment.")
+
+def recommencer(nbl,mot_cache,mot,vie,vicoire,liste_lettre):
+    global list_lettres
+    vie =7
+    nbl=[]
+    mot_cache=None
+    mot=None
+    victoire=None
+    liste_lettre=[]
+    list_lettres=[]
+    return nbl,mot_cache,mot,vie,victoire,liste_lettre
 
 def main():
     jeu()

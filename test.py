@@ -65,47 +65,62 @@ def print_settings():
     screen.blit(txt_word, (335, 295))
     screen.blit(txt_add, (320, 235))
 
+def print_potence() :
+    if life < 7 :
+        screen.blit(pygame.transform.scale(pygame.image.load(f'assets/images//potence/potence{life}.png'), (350, 260)),(300, 30))
+
+    
 def print_game():
-    pygame.display.get_surface().fill((0,0,0))
-    font = pygame.font.Font(None, 30)
-    rect_hiden_word = pygame.Rect(350, 200, 300, 35)
+    pygame.display.get_surface().fill((255,255,255))
+    screen.blit(img_play_background, (0,0))
+    font = pygame.font.SysFont('Rockwell', 30, bold=True)
+
+    #rect_hiden_word = pygame.Rect(330, 370, 300, 35)
     txt_hidden_word = font.render(hidden_word, 1, (0,0,0))
 
-    pygame.draw.rect(screen, (255, 255, 255), rect_hiden_word)
+    #pygame.draw.rect(screen, (255, 255, 255), rect_hiden_word)
+    screen.blit(img_hidden_word, (315, 370))
     
     screen.blit(img_btn_exit, (910,0))
-    screen.blit(txt_hidden_word, (355, 210))
+    screen.blit(txt_hidden_word, (355, 380))
+    print_potence()
 
     row = 0
     column = 0
     for i in range(len(list_alph)):
-        letter = font.render(list_alph[i], 1, (0,0,0))
+        letter = font.render(list_alph[i], 1, (245, 222, 179))
+        case = None
         
         if list_alph[i] in list_letter and list_alph[i] in str_word:
-            color = (50, 200, 50)
+            case = img_grenn_case
         elif list_alph[i] in list_letter and list_alph[i] not in str_word:
-            color = (200, 50, 50)
+            case = img_red_case 
         else:
-            color = (255, 255, 255)
-        
+            case = img_case
         if column % 9 == 0:
             row += 1
             column = 0
+
+        x = 250 + (column * 60)
+        y = 510 + (row * 60)
         if i < 18:
-            pygame.draw.rect(screen, color, pygame.Rect(250+(column*(50+10)), 400+(row*(50+10)), 50, 50))
-            screen.blit(letter, (250+(column*(50+10)), 400+(row*(50+10))))
+            screen.blit(case, (x, y))
+            screen.blit(letter, (x+15, y+5))
         else:
-            pygame.draw.rect(screen, color, pygame.Rect(250+30+(column*(50+10)), 400+(row*(50+10)), 50, 50))
-            screen.blit(letter, (250+30+(column*(50+10)), 400+(row*(50+10))))
+            screen.blit(case, (x+30, y))
+            screen.blit(letter, ((x+15+30), y+5))
 
         column += 1
 
-def print_game_over_window(game_status) :
-    font_title = pygame.font.SysFont('Rockwell', 30, bold=True)
-    pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(125, 190, 600, 100))
-    txt_game_status = font_title.render(game_status, 1, (0, 0, 0))
-    screen.blit(txt_game_status, (320, 220))
-
+def print_game_over_window(game_status, score=None) :
+    font_title = pygame.font.SysFont('Rockwell', 39, bold=True)
+    font = pygame.font.SysFont('Rockwell', 30, bold=True)
+    txt_game_status = font_title.render(game_status, 1, (245, 222, 179))
+    screen.blit(pygame.transform.scale(img_sign, (600, 300)), (280, -100))
+    screen.blit(txt_game_status, (450, 50))
+    if score != None :
+        txt_score = font.render(f"Score : {score}", 1, (245, 222, 179))
+        screen.blit(txt_score, (450, 110))
 
 
 def music(start):
@@ -116,9 +131,19 @@ def music(start):
         pygame.mixer.music.load("assets/sons/menu.mp3")
         pygame.mixer.music.play(-1)
 
+
+def valid_letter_sound(valid_letter) :
+    if valid_letter :
+        pygame.mixer.Sound("assets/sons/ding.mp3").play()
+    elif not valid_letter and valid_letter != None :
+        pygame.mixer.Sound("assets/sons/marteau2.wav").play()
+    return None
+
+
 def write(string):
     global str_word_to_add
     str_word_to_add += string
+
 
 def remove():
     global str_word_to_add
@@ -126,6 +151,7 @@ def remove():
     for i in range(len(str_word_to_add)-1):
         removed_word += str_word_to_add[i]
     str_word_to_add = removed_word
+
 
 #======== Menu Principal ========#
 def menu():
@@ -155,9 +181,9 @@ def menu():
     
     return True, False, False, True
 
+
 #========= Settings ==========#
 def settings():
-    """Gère la logique du menu des paramètres"""
     global writing, str_word_to_add, difficulty, list_words
     
     print_settings()
@@ -203,10 +229,11 @@ def settings():
 #========= Jeu ==========#
 def game():
     global list_words, list_letter, hidden_word, life, str_word
+    valid_letter = None
     
     if list_words == []:
         list_words = separation(difficulty)
-        print(list_words)
+        #print(list_words)
     
     if str_word == "" or str_word == None:
         str_word =choix_mot(list_words)
@@ -223,6 +250,7 @@ def game():
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 if btn_exit.collidepoint(event.pos):
+                    list_words, hidden_word, str_word, life, game_status,list_letter = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter)
                     pygame.mixer.Sound("assets/sons/clique.wav").play()
                     music(False)
                     return True, False, False, True
@@ -234,30 +262,34 @@ def game():
                             row += 1
                             column = 0
                         if i < 18: # 2 premiere lignes du clavier
-                            if pygame.Rect(250+(column*(50+10)), 400+(row*(50+10)), 50, 50).collidepoint(event.pos):
-                                #print(list_alph[i])
-                                #list_letter.append(list_alph[i])
+                            if pygame.Rect(250+(column*(50+10)), 510+(row*(50+10)), 50, 50).collidepoint(event.pos) and list_alph[i] not in list_letter:
                                 letter = input_lettre(list_alph[i])
                                 list_letter.append(letter)
-                                hidden_word, life = verif_mot(letter,hidden_word,str_word,life)
+                                hidden_word, life, valid_letter = verif_mot(letter,hidden_word,str_word,life)
                         else: # derniere ligne du clavier
-                            if pygame.Rect(250+30+(column*(50+10)), 400+(row*(50+10)), 50, 50).collidepoint(event.pos):
-                                #print(list_alph[i])
-                                #list_letter.append(list_alph[i])
+                            if pygame.Rect(250+30+(column*(50+10)), 510+(row*(50+10)), 50, 50).collidepoint(event.pos) and list_alph[i] not in list_letter:
                                 letter = input_lettre(list_alph[i])
                                 list_letter.append(letter)
-                                hidden_word, life = verif_mot(letter,hidden_word,str_word,life)
+                                hidden_word, life, valid_letter = verif_mot(letter,hidden_word,str_word,life)
                         column += 1
+
         
         if event.type == pygame.KEYDOWN and game_status == None :
-            letter = input_lettre(event.unicode)
-            list_letter.append(letter)
-            hidden_word, life = verif_mot(letter,hidden_word,str_word,life)
-    
+            if event.unicode not in list_letter :
+                letter = input_lettre(event.unicode)
+                list_letter.append(letter)
+                hidden_word, life, valid_letter = verif_mot(letter,hidden_word,str_word,life)
+        
+        # Gestion du clic pour recommencer après victoire/défaite
+        if event.type == pygame.MOUSEBUTTONDOWN and game_status != None:
+            list_words, hidden_word, str_word, life, game_status,list_letter = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter)
+
+        valid_letter = valid_letter_sound(valid_letter)
+
     if game_status == 'defaite':
         pygame.mixer.Sound("assets/sons/mort.mp3").play()
-        print_game_over_window(game_status)
         points = score(life, nb_l, difficulty)
+        print_game_over_window(game_status, points)
         highscores = charger_scores()
         player_name = "test" # à modifier à un input pygame
         highscore(points, highscores)
@@ -265,7 +297,6 @@ def game():
         afficher_score()
     elif game_status == 'victoire':
         print_game_over_window(game_status)
-        print("") # ajouter une fenêtre de victoire / défaite
     
     return False, True, False, True
 
@@ -279,6 +310,7 @@ screen = pygame.display.set_mode((1000, 750))
 # Chargement des images
 menu_background = pygame.transform.scale(pygame.image.load('assets/images/fond_menu.png'), (1000, 750))
 settings_background = pygame.transform.scale(pygame.image.load('assets/images/fond_settings.png'), (1000, 750))
+img_play_background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu.png'),(1000,750))
 img_btn_play = pygame.transform.scale(pygame.image.load('assets/images/jouer.png'), (300, 150))
 img_btn_settings = pygame.transform.scale(pygame.image.load('assets/images/reglages.png'), (300, 150))
 img_sign_settings = pygame.transform.scale(img_btn_settings, (350, 160))
@@ -288,6 +320,11 @@ img_sign = pygame.transform.scale(pygame.image.load('assets/images/pancarte.png'
 img_btn_add_difficulty = pygame.transform.scale(pygame.image.load('assets/images/+.png'), (50, 40))
 img_btn_less_difficulty = pygame.transform.scale(pygame.image.load('assets/images/-.png'), (50, 40))
 img_btn_add_word = pygame.transform.scale(pygame.image.load('assets/images/coche.png'), (50, 40))
+img_case = pygame.transform.scale(pygame.image.load('assets/images/case.png'), (50, 50))
+img_red_case = pygame.transform.scale(pygame.image.load('assets/images/case_rouge.png'), (50, 50))
+img_grenn_case = pygame.transform.scale(pygame.image.load('assets/images/case_verte.png'), (50, 50))
+img_hidden_word = pygame.transform.scale(pygame.image.load('assets/images/papier.png'), (300, 50))
+
 
 # Définition des boutons
 btn_start = pygame.Rect(352, 190, 300, 95)
