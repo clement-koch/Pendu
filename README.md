@@ -14,7 +14,7 @@ Ce jeu du pendu propose une interface graphique complète avec :
 
 <img width="325" height="970" alt="menu_pendu" src="https://github.com/user-attachments/assets/c978e390-f337-4a57-b2fd-12a75d0a71eb" />
 <img width="325" height="968" alt="jeu_pendu" src="https://github.com/user-attachments/assets/185f3992-1ef1-4ff5-b332-90712fc76559" />
-<img width="1248" height="973" alt="image" src="https://github.com/user-attachments/assets/c33ea83d-2d3b-40c4-b006-064180addbc2" />
+<img width="325" height="970" alt="image" src="https://github.com/user-attachments/assets/c33ea83d-2d3b-40c4-b006-064180addbc2" />
 
 ##  Fonctionnalités
 
