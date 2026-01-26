@@ -1,0 +1,26 @@
+[
+    {
+        "Nom": "test3",
+        "Score": 270
+    },
+    {
+        "Nom": "test3",
+        "Score": 270
+    },
+    {
+        "Nom": "test3",
+        "Score": 270
+    },
+    {
+        "Nom": "test",
+        "Score": 202.5
+    },
+    {
+        "Nom": "test",
+        "Score": 202.5
+    },
+    {
+        "Nom": "null",
+        "Score": 0.0
+    }
+]
