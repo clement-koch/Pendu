@@ -191,8 +191,6 @@ def ajouter_score(nom_joueur, points,highscores):
     nouveau_score = {"Nom": nom_joueur, "Score": points}
     highscores.append(nouveau_score)
     highscores.sort(key=lambda x: x["Score"], reverse=True)
-    if len(highscores) > max_scores:
-        highscores.pop()
     sauvegarder_score(highscores)
 
 def input_lettre(lettre):

@@ -199,7 +199,7 @@ def print_scores_window(highscores):
         screen.blit(txt_empty, (280, 200))
     else:
         y_pos = 200
-        for i, score_entry in enumerate(highscores):
+        for i, score_entry in enumerate(highscores[:10]):
             txt_score = font_score.render(f"{i+1}. {score_entry['Nom']} - {score_entry['Score']} pts", 1, (0, 0, 0))
             screen.blit(txt_score, (270, y_pos))
             y_pos += 40
