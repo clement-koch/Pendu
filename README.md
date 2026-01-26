@@ -12,6 +12,10 @@ Ce jeu du pendu propose une interface graphique complète avec :
 - Des effets sonores et musicaux immersifs
 - Une interface graphique thématique avec animations visuelles
 
+<img width="325" height="970" alt="menu_pendu" src="https://github.com/user-attachments/assets/c978e390-f337-4a57-b2fd-12a75d0a71eb" />
+<img width="325" height="968" alt="jeu_pendu" src="https://github.com/user-attachments/assets/185f3992-1ef1-4ff5-b332-90712fc76559" />
+<img width="325" height="972" alt="reglage_pendu" src="https://github.com/user-attachments/assets/e1174ed5-fd2b-4ee7-8287-831762348f36" />
+
 ##  Fonctionnalités
 
 ### Menu principal
