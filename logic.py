@@ -1,6 +1,7 @@
 from random import *
 import json
-
+import os
+import sys
 
 nb_l=0
 list_lettres=[]
@@ -239,7 +240,7 @@ def afficher_score(score_file="scores.txt"):
     except FileNotFoundError:
         print("Aucun score enregistré pour le moment.")
 
-def recommencer(nbl,mot_cache,mot,vie,vicoire,liste_lettre, nb_l, player_name, play_sound_dead):
+def recommencer(nbl,mot_cache,mot,vie,victoire,liste_lettre, nb_l, player_name, play_sound_dead):
     global list_lettres
     vie =7
     nbl=[]

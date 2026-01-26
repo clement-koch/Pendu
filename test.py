@@ -22,12 +22,6 @@ player_name = ""
 
 def print_menu():
     screen.blit(menu_background, (0,0))
-    
-    font = pygame.font.Font(None, 35)
-    txt_start = font.render("Commencer", 1, (255,255,255))
-    txt_word = font.render("Ajouter des mots", 1, (255,255,255))
-    txt_quit = font.render("Quitter", 1, (255,255,255))
-    
     screen.blit(img_btn_play, (350,135))
     screen.blit(img_btn_settings, (350,280))
     screen.blit(img_btn_quit, (350,425))
@@ -330,7 +324,7 @@ def game():
             if not victory_music_played:
                 pygame.mixer.music.load("assets/sons/gagne.mp3")
                 pygame.mixer.music.play(-1)
-                victory_music_played = True       
+                victory_music_played = True
 
     # commandes :
     for event in pygame.event.get():
@@ -373,6 +367,7 @@ def game():
                         list_words, hidden_word, str_word, life, game_status,list_letter, nb_l, player_name, play_sound_dead = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter, nb_l, player_name, play_sound_dead)
                         img_play_background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu.png'),(1000,750))
                         victory_music_played = False
+                        music(True)
                     writing = False
 
         if event.type == pygame.KEYDOWN :
@@ -428,7 +423,6 @@ img_moon1 = pygame.transform.scale(pygame.image.load('assets/images/lune1.png'),
 img_moon0 = pygame.transform.scale(pygame.image.load('assets/images/lune0.png'), (120, 105))
 img_red_moon = pygame.transform.scale(pygame.image.load('assets/images/lune_rouge.png'), (150, 120))
 img_btn_replay = pygame.transform.scale(pygame.image.load('assets/images/replay.png'), (50, 49))
-
 
 
 # Définition des boutons
