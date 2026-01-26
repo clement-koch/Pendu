@@ -360,10 +360,12 @@ def game():
                 elif game_status != None and  player_name_input.collidepoint(event.pos):
                     writing = True
                 elif game_status != None and btn_add_score.collidepoint(event.pos) and player_name != "" :
+                    pygame.mixer.Sound("assets/sons/clique.wav").play()
                     highscore(points, highscores)
                     ajouter_score(player_name, points, highscores)
                 else:
                     if btn_replay.collidepoint(event.pos):
+                        pygame.mixer.Sound("assets/sons/clique.wav").play()
                         list_words, hidden_word, str_word, life, game_status,list_letter, nb_l, player_name, play_sound_dead = recommencer(list_words,hidden_word,str_word,life,game_status,list_letter, nb_l, player_name, play_sound_dead)
                         img_play_background = pygame.transform.scale(pygame.image.load('assets/images/fond_jeu.png'),(1000,750))
                         victory_music_played = False
