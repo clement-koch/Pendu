@@ -110,13 +110,14 @@ def print_keyboard() :
 def print_game():
     pygame.display.get_surface().fill((255,255,255))
     screen.blit(img_play_background, (0,0))
-    font = pygame.font.SysFont('Rockwell', 30, bold=True)
+    font = pygame.font.SysFont('Rockwell', 25, bold=True)
 
     txt_hidden_word = font.render(hidden_word, 1, (0,0,0))
+    word_size = font.size(hidden_word)
 
-    screen.blit(img_hidden_word, (315, 370))    
+    screen.blit(img_hidden_word, (285, 370))    
     screen.blit(img_btn_exit, (910,0))
-    screen.blit(txt_hidden_word, (355, 380))
+    screen.blit(txt_hidden_word, (285+(350-word_size[0])/2, 385))
     print_potence()
     print_moon()
     print_keyboard()
@@ -419,7 +420,7 @@ img_btn_add_word = pygame.transform.scale(pygame.image.load('assets/images/coche
 img_case = pygame.transform.scale(pygame.image.load('assets/images/case.png'), (50, 50))
 img_red_case = pygame.transform.scale(pygame.image.load('assets/images/case_rouge.png'), (50, 50))
 img_grenn_case = pygame.transform.scale(pygame.image.load('assets/images/case_verte.png'), (50, 50))
-img_hidden_word = pygame.transform.scale(pygame.image.load('assets/images/papier.png'), (300, 50))
+img_hidden_word = pygame.transform.scale(pygame.image.load('assets/images/papier.png'), (350, 50))
 img_moon2 = pygame.transform.scale(pygame.image.load('assets/images/lune2.png'), (150, 120))
 img_moon1 = pygame.transform.scale(pygame.image.load('assets/images/lune1.png'), (120, 105))
 img_moon0 = pygame.transform.scale(pygame.image.load('assets/images/lune0.png'), (120, 105))
